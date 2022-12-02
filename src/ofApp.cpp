@@ -21,7 +21,19 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     //kinect.draw(0,0,640,480);
-    imgDiff.draw(0,0);
+    //imgDiff.draw(0,0);
+    
+    for (int i = 0; i < kinect.getHeight(); i+=8){
+        ofPolyline polyline;
+        for (int j = 0; j < kinect.getWidth(); j++){
+            ofColor col = imgDiff.getPixels().getColor(j,i);
+            int brightness = col.getBrightness();
+            polyline.addVertex(j, i+ofMap(brightness, 0, 255, 0, -64));
+            //sends y coord up if bright
+        }
+        polyline = polyline.getSmoothed(10);
+        polyline.draw();
+    }
 }
 
 //--------------------------------------------------------------
