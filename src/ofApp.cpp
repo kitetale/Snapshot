@@ -6,6 +6,7 @@ void ofApp::setup(){
     kinect.open();
     imitate(prevPx,kinect);
     imitate(imgDiff,kinect);
+    drawptcloud = false;
 }
 
 //--------------------------------------------------------------
@@ -20,9 +21,9 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    //kinect.draw(0,0,640,480);
-    //imgDiff.draw(0,0);
-    
+    //kinect.draw(0,0,kinect.width/2,kinect.height/2);
+    //imgDiff.draw(0,kinect.height/2);
+    /*
     for (int i = 0; i < kinect.getHeight(); i+=8){
         ofPolyline polyline;
         for (int j = 0; j < kinect.getWidth(); j++){
@@ -34,6 +35,34 @@ void ofApp::draw(){
         polyline = polyline.getSmoothed(10);
         polyline.draw();
     }
+    */
+    if (drawptcloud){
+        cam.begin(); //allow to look around point cloud in 3D
+        drawPointCloud();
+        cam.end();
+    } else {
+        kinect.drawDepth(0,0);
+    }
+}
+//--------------------------------------------------------------
+void ofApp::drawPointCloud(){
+    ofMesh pointCloud;
+    
+    for (int y=0; y<kinect.height; ++y){
+        for (int x=0; x<kinect.width; ++x){
+            // give me x y z pos in world at this vertex
+            pointCloud.addVertex(kinect.getWorldCoordinateAt(x,y));
+        }
+    }
+    
+    // push matrix to not mess up matrix
+    ofPushMatrix();
+    // translate back
+    ofTranslate(0,0,-1000);
+    pointCloud.drawVertices();
+    
+    // pop matrix when done
+    ofPopMatrix();
 }
 
 //--------------------------------------------------------------
@@ -58,6 +87,9 @@ void ofApp::keyPressed(int key){
         }
         kinect.setCameraTiltAngle(angle);
         break;
+            
+        case 'p':
+            drawptcloud = !drawptcloud;
     
     default:
         break;

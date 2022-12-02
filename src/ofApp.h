@@ -27,10 +27,15 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    
+    void drawPointCloud();
 
 	ofxKinect kinect;
     ofImage imgDiff;
     ofPixels prevPx;
 	int angle;
+    bool drawptcloud;
+    
+    ofEasyCam cam; // allows to look around the point cloud in 3D space
 		
 };
