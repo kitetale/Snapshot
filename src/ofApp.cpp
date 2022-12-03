@@ -9,8 +9,8 @@ void ofApp::setup(){
     
     drawptcloud = false;
     
-    nearClip = 1500; // in mm
-    farClip = 1800; // in mm
+    nearClip = 500; // in mm
+    farClip = 1000; // in mm
     bucketNum = 6;
     bucketSize = 8000/bucketNum;
     
@@ -56,11 +56,16 @@ void ofApp::drawPointCloud(){
     // set modes to only draw points
     pointCloud.clear();
     //pointCloud.setMode(OF_PRIMITIVE_POINTS);
+    pointIndex.clear();
+    
+    int h = kinect.height;
+    int w = kinect.width;
     
     // point cloud creation
-    for (int y=0; y<kinect.height; ++y){
-        for (int x=0; x<kinect.width; ++x){
+    for (int y=0; y<h; y++){
+        for (int x=0; x<w; x++){
             ofVec3f point;
+            point.set(0,0,0);
             // give me x y z pos in world at this vertex
             point = kinect.getWorldCoordinateAt(x,y);
             //if (point.z > nearClip && point.z < farClip){
@@ -70,26 +75,49 @@ void ofApp::drawPointCloud(){
                 // add color from rgb cam to each vertex
                 //pointCloud.addColor(kinect.getColorAt(x,y));
                 // add color from defined color space with z as hue
+
                 ofColor color;
                 color.setHsb(ofMap(point.z,100,8000,0,255), 255, 255);
                 pointCloud.addColor(color);
+                
             //}
+            if (point.z){
+                pointIndex.push_back(point.z); // valid point to make triangle mesh
+            } else {
+                pointIndex.push_back(0); // not valid point
+            }
         }
     }
     
     // vertices into triangular mesh
-    int h = kinect.height;
-    int w = kinect.width;
-    for (int y=0; y<h-1; ++y){
-        for (int x=0; x<w-1; ++x){
-            // adding point, point below, point next to (triangle)
-            pointCloud.addIndex(x+y*w);
-            pointCloud.addIndex((x+1)+y*w);
-            pointCloud.addIndex(x+(y+1)*w);
-            // adding point next to, point below, point prev to below (opposite triangle)
-            pointCloud.addIndex((x+1)+y*w);
-            pointCloud.addIndex((x+1)+(y+1)*w);
-            pointCloud.addIndex(x+(y+1)*w);
+    int th = 60;
+    for (int y=0; y<h-1; y++){
+        for (int x=0; x<w-1; x++){
+            // check whether all three points are valid points
+            if (abs(pointIndex[x+y*w]-pointIndex[(x+1)+y*w])<th &&
+                abs(pointIndex[(x+1)+y*w]-pointIndex[x+((y+1)*w)])<th &&
+                abs(pointIndex[x+((y+1)*w)]-pointIndex[x+y*w])<th &&
+                pointIndex[x+y*w] &&
+                pointIndex[(x+1)+y*w] &&
+                pointIndex[x+((y+1)*w)]){
+                // adding point, point below, point next to (triangle)
+                pointCloud.addIndex(x+y*w);
+                pointCloud.addIndex((x+1)+y*w);
+                pointCloud.addIndex(x+((y+1)*w));
+            }
+            // check whether all three points are valid points
+            if (abs(pointIndex[(x+1)+y*w]-pointIndex[(x+1)+((y+1)*w)])<th &&
+                abs(pointIndex[(x+1)+((y+1)*w)]-pointIndex[x+((y+1)*w)])<th &&
+                abs(pointIndex[x+((y+1)*w)]-pointIndex[(x+1)+y*w])<th &&
+                pointIndex[(x+1)+y*w] &&
+                pointIndex[(x+1)+((y+1)*w)] &&
+                pointIndex[x+((y+1)*w)]){
+                // adding point next to, point below, point prev to below
+                // (opposite triangle to above)
+                pointCloud.addIndex((x+1)+y*w);
+                pointCloud.addIndex((x+1)+((y+1)*w));
+                pointCloud.addIndex(x+((y+1)*w));
+            }
         }
     }
     
@@ -107,6 +135,7 @@ void ofApp::drawPointCloud(){
     ofTranslate(0,0,-1000);
     //pointCloud.drawVertices();
     pointCloud.drawWireframe();
+    //pointCloud.draw();
     
     // pop matrix when done
     ofPopMatrix();

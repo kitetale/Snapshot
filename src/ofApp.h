@@ -43,4 +43,5 @@ class ofApp : public ofBaseApp{
     ofEasyCam cam; // allows to look around the point cloud in 3D space
     
     ofMesh pointCloud;
+    vector<int> pointIndex;
 };
