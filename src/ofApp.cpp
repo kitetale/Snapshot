@@ -7,6 +7,10 @@ void ofApp::setup(){
     imitate(prevPx,kinect);
     imitate(imgDiff,kinect);
     drawptcloud = false;
+    nearClip = 0; // in mm
+    farClip = 8000; // in mm
+    bucketNum = 6;
+    bucketSize = 8000/bucketNum;
 }
 
 //--------------------------------------------------------------
@@ -47,16 +51,38 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::drawPointCloud(){
     ofMesh pointCloud;
+    // set modes to only draw points
+    pointCloud.setMode(OF_PRIMITIVE_POINTS);
     
     for (int y=0; y<kinect.height; ++y){
         for (int x=0; x<kinect.width; ++x){
+            ofVec3f point;
             // give me x y z pos in world at this vertex
-            pointCloud.addVertex(kinect.getWorldCoordinateAt(x,y));
+            point = kinect.getWorldCoordinateAt(x,y);
+            if (point.z > nearClip && point.z < farClip){
+                // add point to point cloud
+                pointCloud.addVertex(point);
+                
+                // add color from rgb cam to each vertex
+                //pointCloud.addColor(kinect.getColorAt(x,y));
+                // add color from defined color space with z as hue
+                ofColor color;
+                color.setHsb(ofMap(point.z,100,8000,0,255), 255, 255);
+                pointCloud.addColor(color);
+            }
         }
     }
     
+    // define size of point drawn
+    glPointSize(3);
+    
+    // enable depth test to draw points based on depth
+    // (so that front drawn later than background)
+    ofEnableDepthTest();
     // push matrix to not mess up matrix
     ofPushMatrix();
+    // use scale to flip orientation of point cloud drawing (since coord goes down as drawn)
+    ofScale(1,-1,-1);
     // translate back
     ofTranslate(0,0,-1000);
     pointCloud.drawVertices();
@@ -74,25 +100,72 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key){
-    case OF_KEY_UP:
-        if (angle < 30) {
-            ++angle;
-        }
-        kinect.setCameraTiltAngle(angle);
-        break;
+        case OF_KEY_UP:
+            if (angle < 30) {
+                ++angle;
+            }
+            kinect.setCameraTiltAngle(angle);
+            break;
 
-    case OF_KEY_DOWN:
-        if (angle > -30) {
-            --angle;
-        }
-        kinect.setCameraTiltAngle(angle);
-        break;
-            
+        case OF_KEY_DOWN:
+            if (angle > -30) {
+                --angle;
+            }
+            kinect.setCameraTiltAngle(angle);
+            break;
+               
+        // change to point cloud mode
         case 'p':
             drawptcloud = !drawptcloud;
+            break;
+        
+        // change bucket num
+        case 'a':
+            if (bucketNum < 8) {
+                ++bucketNum;
+                bucketSize = 8000/bucketNum;
+            }
+            break;
+        case 's':
+            if (bucketNum > 1) {
+                --bucketNum;
+                bucketSize = 8000/bucketNum;
+            }
+            break;
     
-    default:
-        break;
+        // switch between different buckets
+        case 'q':
+            nearClip = 0;
+            farClip = bucketSize;
+            break;
+        case 'w':
+            nearClip = bucketSize;
+            farClip = bucketSize+bucketSize;
+            break;
+        case 'e':
+            nearClip = bucketSize+bucketSize;
+            farClip = bucketSize*3;
+            break;
+        case 'r':
+            nearClip = bucketSize*3;
+            farClip = bucketSize*4;
+            break;
+        case 't':
+            nearClip = bucketSize*4;
+            farClip = bucketSize*5;
+            break;
+        case 'y':
+            nearClip = bucketSize*5;
+            farClip = bucketSize*6;
+            break;
+        case 'u':
+            nearClip = bucketSize*6;
+            farClip = 8000;
+            break;
+            
+    
+        default:
+            break;
     }
 }
 

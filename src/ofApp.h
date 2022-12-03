@@ -35,6 +35,9 @@ class ofApp : public ofBaseApp{
     ofPixels prevPx;
 	int angle;
     bool drawptcloud;
+    int nearClip, farClip;
+    int bucketSize;
+    int bucketNum;
     
     ofEasyCam cam; // allows to look around the point cloud in 3D space
 		
