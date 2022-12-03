@@ -9,14 +9,11 @@ void ofApp::setup(){
     
     drawptcloud = false;
     
-    nearClip = 0; // in mm
-    farClip = 8000; // in mm
+    nearClip = 1500; // in mm
+    farClip = 1800; // in mm
     bucketNum = 6;
     bucketSize = 8000/bucketNum;
     
-    gui.setup("near far clip panel");
-    gui.add(nearclip.set("near clip",500,100,8000));
-    gui.add(farclip.set("far clip",800,500,8000));
 }
 
 //--------------------------------------------------------------
@@ -53,21 +50,20 @@ void ofApp::draw(){
     } else {
         kinect.drawDepth(0,0);
     }
-    
-    gui.draw();
 }
 //--------------------------------------------------------------
 void ofApp::drawPointCloud(){
-    ofMesh pointCloud;
     // set modes to only draw points
-    pointCloud.setMode(OF_PRIMITIVE_POINTS);
+    pointCloud.clear();
+    //pointCloud.setMode(OF_PRIMITIVE_POINTS);
     
+    // point cloud creation
     for (int y=0; y<kinect.height; ++y){
         for (int x=0; x<kinect.width; ++x){
             ofVec3f point;
             // give me x y z pos in world at this vertex
             point = kinect.getWorldCoordinateAt(x,y);
-            if (point.z > nearClip && point.z < farClip){
+            //if (point.z > nearClip && point.z < farClip){
                 // add point to point cloud
                 pointCloud.addVertex(point);
                 
@@ -77,7 +73,23 @@ void ofApp::drawPointCloud(){
                 ofColor color;
                 color.setHsb(ofMap(point.z,100,8000,0,255), 255, 255);
                 pointCloud.addColor(color);
-            }
+            //}
+        }
+    }
+    
+    // vertices into triangular mesh
+    int h = kinect.height;
+    int w = kinect.width;
+    for (int y=0; y<h-1; ++y){
+        for (int x=0; x<w-1; ++x){
+            // adding point, point below, point next to (triangle)
+            pointCloud.addIndex(x+y*w);
+            pointCloud.addIndex((x+1)+y*w);
+            pointCloud.addIndex(x+(y+1)*w);
+            // adding point next to, point below, point prev to below (opposite triangle)
+            pointCloud.addIndex((x+1)+y*w);
+            pointCloud.addIndex((x+1)+(y+1)*w);
+            pointCloud.addIndex(x+(y+1)*w);
         }
     }
     
@@ -93,10 +105,13 @@ void ofApp::drawPointCloud(){
     ofScale(1,-1,-1);
     // translate back
     ofTranslate(0,0,-1000);
-    pointCloud.drawVertices();
+    //pointCloud.drawVertices();
+    pointCloud.drawWireframe();
     
     // pop matrix when done
     ofPopMatrix();
+    // disable depth test for other unrelated calls
+    ofDisableDepthTest();
 }
 
 //--------------------------------------------------------------

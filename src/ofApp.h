@@ -41,7 +41,6 @@ class ofApp : public ofBaseApp{
     int bucketNum;
     
     ofEasyCam cam; // allows to look around the point cloud in 3D space
-    ofxPanel gui; // gui to control val in build
-    ofParameter<int> nearclip;
-    ofParameter<int> farclip;
+    
+    ofMesh pointCloud;
 };
