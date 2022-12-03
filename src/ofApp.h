@@ -4,6 +4,7 @@
 #include "ofxKinect.h"
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
+#include "ofxGui.h"
 
 using namespace ofxCv;
 using namespace cv;
@@ -40,5 +41,7 @@ class ofApp : public ofBaseApp{
     int bucketNum;
     
     ofEasyCam cam; // allows to look around the point cloud in 3D space
-		
+    ofxPanel gui; // gui to control val in build
+    ofParameter<int> nearclip;
+    ofParameter<int> farclip;
 };

@@ -6,11 +6,17 @@ void ofApp::setup(){
     kinect.open();
     imitate(prevPx,kinect);
     imitate(imgDiff,kinect);
+    
     drawptcloud = false;
+    
     nearClip = 0; // in mm
     farClip = 8000; // in mm
     bucketNum = 6;
     bucketSize = 8000/bucketNum;
+    
+    gui.setup("near far clip panel");
+    gui.add(nearclip.set("near clip",500,100,8000));
+    gui.add(farclip.set("far clip",800,500,8000));
 }
 
 //--------------------------------------------------------------
@@ -47,6 +53,8 @@ void ofApp::draw(){
     } else {
         kinect.drawDepth(0,0);
     }
+    
+    gui.draw();
 }
 //--------------------------------------------------------------
 void ofApp::drawPointCloud(){
