@@ -30,6 +30,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     void drawPointCloud();
+    void autoCapture();
 
 	ofxKinect kinect;
     ofImage imgDiff;
@@ -51,12 +52,25 @@ class ofApp : public ofBaseApp{
     bool learnBg;
     int grayThreshold;
     
-    ofMesh pointCloud;
-    ofMesh bucketCloud;
-    vector<int> pointIndex;
-    vector<int> bucketIndex;
+    // point clouds
+    ofMesh pointCloud; // all vertices
+    ofMesh bucketCloud; // all vertices
+    vector<int> pointIndex; // all data
+    vector<int> bucketIndex; // for current bucket data
     
-    int curBucket;
-    ofImage bucketImg, finalImg;
-    ofxCvGrayscaleImage bucketImgGray;
+    // current layer
+    int curBucket; //current bucket index
+    ofImage bucketImg, finalImg; //ofImage for saving to os
+    ofxCvGrayscaleImage bucketImgGray; //grayscale for contourfinder
+    
+    // for capturing layers
+    ofImage img0, img1, img2, img3, img4, img5, img6, img7;
+    
+    //timestamps
+    int year,month,day,hr,min,sec;
+    int lastMin;
+    int timeGap;
+    int captureIndex;
+    vector<string> captureTime; // "mm/dd/yy hr:min:sec"
+    
 };

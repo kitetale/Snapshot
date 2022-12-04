@@ -27,10 +27,31 @@ void ofApp::setup(){
     bucketImg.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
     finalImg.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
     
+    //capturing images
+    img0.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    img1.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    img2.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    img3.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    img4.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    img5.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    img6.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    img7.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    
     learnBg = false;
     grayThreshold = 30;
     
     curBucket = 10;
+    
+    // timestamp
+    year = ofGetYear();
+    month = ofGetMonth();
+    day = ofGetDay();
+    hr = ofGetHours();
+    min = ofGetMinutes();
+    sec = ofGetSeconds();
+    lastMin = ofGetMinutes();
+    timeGap = 1; // auto-capture frame every timeGap minutes
+    captureIndex = 0;
 }
 
 //--------------------------------------------------------------
@@ -57,7 +78,188 @@ void ofApp::update(){
          */
         
     }
+    
+    //update time
+    hr = ofGetHours();
+    min = ofGetMinutes();
+    sec = ofGetSeconds();
+    if (((min-lastMin) == timeGap) || (min+60-lastMin == timeGap)) {
+        autoCapture();
+        lastMin = min;
+    }
 }
+//--------------------------------------------------------------
+void ofApp::autoCapture(){
+    //use precomputed data
+    ofPixels pix;
+    pix.allocate(bucketImg.getWidth(), bucketImg.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix = bucketImg.getPixels();
+    ofSaveImage(pix,"bucket"+std::to_string(curBucket+1)+"/"+std::to_string(captureIndex)+".png");
+
+    
+    // I prob could have mod this part for style, but maybe not at 4am..
+    unsigned char* img0_data = img0.getPixels().getData();
+    unsigned char* img1_data = img1.getPixels().getData();
+    unsigned char* img2_data = img2.getPixels().getData();
+    unsigned char* img3_data = img3.getPixels().getData();
+    unsigned char* img4_data = img4.getPixels().getData();
+    unsigned char* img5_data = img5.getPixels().getData();
+    unsigned char* img6_data = img6.getPixels().getData();
+    unsigned char* img7_data = img7.getPixels().getData();
+    for (int y=0; y<h; ++y){
+        for (int x=0; x<w; ++x){
+            ofVec3f point;
+            point = kinect.getWorldCoordinateAt(x,y);
+            int index = point.z>8000||point.z<=0?
+                        10:
+                            point.z<100&&point.z>0?
+                            0:
+                            floor(point.z/8000*bucketNum);
+            if (index == curBucket) continue;
+            switch (index){
+                case '0':
+                    img0_data[x+y*w] = 255;
+                    img1_data[x+y*w] = 0;
+                    img2_data[x+y*w] = 0;
+                    img3_data[x+y*w] = 0;
+                    img4_data[x+y*w] = 0;
+                    img5_data[x+y*w] = 0;
+                    img6_data[x+y*w] = 0;
+                    img7_data[x+y*w] = 0;
+                    break;
+                case '1':
+                    img0_data[x+y*w] = 0;
+                    img1_data[x+y*w] = 255 - 50;
+                    img2_data[x+y*w] = 0;
+                    img3_data[x+y*w] = 0;
+                    img4_data[x+y*w] = 0;
+                    img5_data[x+y*w] = 0;
+                    img6_data[x+y*w] = 0;
+                    img7_data[x+y*w] = 0;
+                    break;
+                case '2':
+                    img0_data[x+y*w] = 0;
+                    img1_data[x+y*w] = 0;
+                    img2_data[x+y*w] = 255 - 50 - 50;
+                    img3_data[x+y*w] = 0;
+                    img4_data[x+y*w] = 0;
+                    img5_data[x+y*w] = 0;
+                    img6_data[x+y*w] = 0;
+                    img7_data[x+y*w] = 0;
+                    break;
+                case '3':
+                    img0_data[x+y*w] = 0;
+                    img1_data[x+y*w] = 0;
+                    img2_data[x+y*w] = 0;
+                    img3_data[x+y*w] = 255 - 50*3;
+                    img4_data[x+y*w] = 0;
+                    img5_data[x+y*w] = 0;
+                    img6_data[x+y*w] = 0;
+                    img7_data[x+y*w] = 0;
+                    break;
+                case '4':
+                    img0_data[x+y*w] = 0;
+                    img1_data[x+y*w] = 0;
+                    img2_data[x+y*w] = 0;
+                    img3_data[x+y*w] = 0;
+                    img4_data[x+y*w] = 255 - 50*4;
+                    img5_data[x+y*w] = 0;
+                    img6_data[x+y*w] = 0;
+                    img7_data[x+y*w] = 0;
+                    break;
+                case '5':
+                    img0_data[x+y*w] = 0;
+                    img1_data[x+y*w] = 0;
+                    img2_data[x+y*w] = 0;
+                    img3_data[x+y*w] = 0;
+                    img4_data[x+y*w] = 0;
+                    img5_data[x+y*w] = 255 - 50*5;
+                    img6_data[x+y*w] = 0;
+                    img7_data[x+y*w] = 0;
+                    break;
+                case '6':
+                    img0_data[x+y*w] = 0;
+                    img1_data[x+y*w] = 0;
+                    img2_data[x+y*w] = 0;
+                    img3_data[x+y*w] = 0;
+                    img4_data[x+y*w] = 0;
+                    img5_data[x+y*w] = 0;
+                    img6_data[x+y*w] = 255 - 50*6;
+                    img7_data[x+y*w] = 0;
+                    break;
+                case '7':
+                    img0_data[x+y*w] = 0;
+                    img1_data[x+y*w] = 0;
+                    img2_data[x+y*w] = 0;
+                    img3_data[x+y*w] = 0;
+                    img4_data[x+y*w] = 0;
+                    img5_data[x+y*w] = 0;
+                    img6_data[x+y*w] = 0;
+                    img7_data[x+y*w] = 255 - 50*7;
+                    break;
+                default:
+                    img0_data[x+y*w] = 0;
+                    img1_data[x+y*w] = 0;
+                    img2_data[x+y*w] = 0;
+                    img3_data[x+y*w] = 0;
+                    img4_data[x+y*w] = 0;
+                    img5_data[x+y*w] = 0;
+                    img6_data[x+y*w] = 0;
+                    img7_data[x+y*w] = 0;
+                    break;
+            }
+            
+        }
+    }
+    img0.update();
+    img1.update();
+    img2.update();
+    img3.update();
+    img4.update();
+    img5.update();
+    img6.update();
+    img7.update();
+    
+    ofPixels pix0, pix1, pix2, pix3, pix4, pix5, pix6, pix7;
+    pix0.allocate(img0.getWidth(), img0.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix1.allocate(img1.getWidth(), img1.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix2.allocate(img2.getWidth(), img2.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix3.allocate(img3.getWidth(), img3.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix4.allocate(img4.getWidth(), img4.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix5.allocate(img5.getWidth(), img5.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix6.allocate(img6.getWidth(), img6.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix7.allocate(img7.getWidth(), img7.getHeight(), OF_IMAGE_QUALITY_BEST);
+    
+    pix0 = img0.getPixels();
+    pix1 = img1.getPixels();
+    pix2 = img2.getPixels();
+    pix3 = img3.getPixels();
+    pix4 = img4.getPixels();
+    pix5 = img5.getPixels();
+    pix6 = img6.getPixels();
+    pix7 = img7.getPixels();
+    
+    ofPixels thisPix;
+    for (int i=0; i<bucketNum; ++i){
+        if (i==curBucket) continue;
+        
+        switch (i){
+            case '0': thisPix = pix0; break;
+            case '1': thisPix = pix1; break;
+            case '2': thisPix = pix2; break;
+            case '3': thisPix = pix3; break;
+            case '4': thisPix = pix4; break;
+            case '5': thisPix = pix5; break;
+            case '6': thisPix = pix6; break;
+            default: thisPix = pix7; break;
+        }
+        
+        ofSaveImage(thisPix,"bucket"+std::to_string(i+1)+"/"+std::to_string(captureIndex)+".png");
+    }
+    
+    ++captureIndex;
+}
+    
 
 
 //--------------------------------------------------------------
@@ -114,6 +316,8 @@ void ofApp::draw(){
         contourFinder.draw(kinect.width/2,kinect.height/2,kinect.width/2,kinect.height/2);
         finalImg.draw(0,kinect.height,kinect.width/2,kinect.height/2);
         
+        // draw time on screen
+        ofDrawBitmapString(std::to_string(hr)+":"+std::to_string(min)+":"+std::to_string(sec), kinect.width/2, kinect.height*1.5);
     }
     
     
@@ -346,7 +550,7 @@ void ofApp::keyPressed(int key){
             ofPixels pix;
             pix.allocate(bucketImg.getWidth(), bucketImg.getHeight(), OF_IMAGE_QUALITY_BEST);
             pix = bucketImg.getPixels();
-            ofSaveImage(pix, "mySnapshot.png");
+            ofSaveViewport("mySnapshot.png");
             break;
         }
             
