@@ -23,6 +23,7 @@ void ofApp::setup(){
     grayBg.allocate(kinect.width,kinect.height);
     grayDiff.allocate(kinect.width,kinect.height);
     
+    bucketImgGray.allocate(kinect.width,kinect.height);
     bucketImg.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
     
     learnBg = false;
@@ -45,7 +46,8 @@ void ofApp::update(){
         
         grayDiff.absDiff(grayBg, grayImage);
         grayDiff.threshold(grayThreshold);
-        contourFinder.findContours(grayDiff, 30, (kinect.width*kinect.height), 10, true);
+        bucketImgGray = bucketImg;
+        contourFinder.findContours(bucketImgGray, 30, (kinect.width*kinect.height), 10, true);
         
         
         /*
@@ -106,7 +108,7 @@ void ofApp::draw(){
         grayImage.draw(0,0, kinect.width/2,kinect.height/2);
         colorImage.draw(kinect.width/2,0,kinect.width/2,kinect.height/2);
         bucketImg.draw(0,kinect.height/2,kinect.width/2,kinect.height/2);
-        //contourFinder.draw(0,0);
+        contourFinder.draw(kinect.width/2,kinect.height/2);
     }
     
     

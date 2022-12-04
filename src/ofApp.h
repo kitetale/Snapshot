@@ -58,4 +58,5 @@ class ofApp : public ofBaseApp{
     
     int curBucket;
     ofImage bucketImg;
+    ofxCvGrayscaleImage bucketImgGray;
 };
