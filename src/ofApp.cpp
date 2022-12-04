@@ -25,6 +25,7 @@ void ofApp::setup(){
     
     bucketImgGray.allocate(kinect.width,kinect.height);
     bucketImg.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    finalImg.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
     
     learnBg = false;
     grayThreshold = 30;
@@ -48,7 +49,6 @@ void ofApp::update(){
         grayDiff.threshold(grayThreshold);
         bucketImgGray = bucketImg;
         contourFinder.findContours(bucketImgGray, 30, (kinect.width*kinect.height), 10, true);
-        
         
         /*
         absdiff(kinect,prevPx,imgDiff);
@@ -83,6 +83,7 @@ void ofApp::draw(){
         cam.end();
     } else {
         unsigned char* bucketImgData = bucketImg.getPixels().getData();
+        unsigned char* finalImgData = finalImg.getPixels().getData();
         //std::cout<<"start:==========================================="<<std::endl;
         for (int y=0; y<h; ++y){
             for (int x=0; x<w; ++x){
@@ -95,8 +96,9 @@ void ofApp::draw(){
                                 0:
                                 floor(point.z/8000*bucketNum);
     
+                finalImgData[x+y*w] = 255 - 50*index;
                 if (index == curBucket){
-                    bucketImgData[x+y*w] = 255;
+                    bucketImgData[x+y*w] = 255 - 50*index;
                 } else {
                     bucketImgData[x+y*w] = 0;
                 }
@@ -104,11 +106,14 @@ void ofApp::draw(){
         }
         //std::cout<<"end ==========================================="<<std::endl;
         bucketImg.update();
-        
+        finalImg.update();
+
         grayImage.draw(0,0, kinect.width/2,kinect.height/2);
         colorImage.draw(kinect.width/2,0,kinect.width/2,kinect.height/2);
         bucketImg.draw(0,kinect.height/2,kinect.width/2,kinect.height/2);
         contourFinder.draw(kinect.width/2,kinect.height/2,kinect.width/2,kinect.height/2);
+        finalImg.draw(0,kinect.height,kinect.width/2,kinect.height/2);
+        
     }
     
     

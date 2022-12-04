@@ -57,6 +57,6 @@ class ofApp : public ofBaseApp{
     vector<int> bucketIndex;
     
     int curBucket;
-    ofImage bucketImg;
+    ofImage bucketImg, finalImg;
     ofxCvGrayscaleImage bucketImgGray;
 };
