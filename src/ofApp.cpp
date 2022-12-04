@@ -9,6 +9,9 @@ void ofApp::setup(){
     
     drawptcloud = false;
     
+    h = kinect.height;
+    w = kinect.width;
+    
     nearClip = 100; // in mm
     farClip = 2500; // in mm
     kinect.setDepthClipping(nearClip,farClip);
@@ -19,6 +22,9 @@ void ofApp::setup(){
     grayImage.allocate(kinect.width,kinect.height);
     grayBg.allocate(kinect.width,kinect.height);
     grayDiff.allocate(kinect.width,kinect.height);
+    
+    bucketImg.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    
     learnBg = false;
     grayThreshold = 30;
     
@@ -74,8 +80,32 @@ void ofApp::draw(){
         drawPointCloud();
         cam.end();
     } else {
+        unsigned char* bucketImgData = bucketImg.getPixels().getData();
+        //std::cout<<"start:==========================================="<<std::endl;
+        for (int y=0; y<h; ++y){
+            for (int x=0; x<w; ++x){
+                ofVec3f point;
+                point = kinect.getWorldCoordinateAt(x,y);
+                //std::cout<<"x: "<<x<<", y: "<<y<<", z: "<<z<<std::endl;
+                int index = point.z>8000||point.z<=0?
+                            10:
+                                point.z<100&&point.z>0?
+                                0:
+                                floor(point.z/8000*bucketNum);
+    
+                if (index == curBucket){
+                    bucketImgData[x+y*w] = 255;
+                } else {
+                    bucketImgData[x+y*w] = 0;
+                }
+            }
+        }
+        //std::cout<<"end ==========================================="<<std::endl;
+        bucketImg.update();
+        
         grayImage.draw(0,0, kinect.width/2,kinect.height/2);
         colorImage.draw(kinect.width/2,0,kinect.width/2,kinect.height/2);
+        bucketImg.draw(0,kinect.height/2,kinect.width/2,kinect.height/2);
         //contourFinder.draw(0,0);
     }
     
@@ -91,18 +121,6 @@ void ofApp::drawPointCloud(){
     pointIndex.clear();
     
     bucketIndex.clear();
-    /*
-    cloudBuckets.clear();
-    // init point clouds buckets
-    for (int i=0; i<bucketNum; ++i){
-        ofMesh bucket;
-        bucket.clear();
-        cloudBuckets.push_back(bucket);
-    }
-     */
-    
-    int h = kinect.height;
-    int w = kinect.width;
     
     // point cloud creation
     for (int y=0; y<h; ++y){
@@ -122,7 +140,7 @@ void ofApp::drawPointCloud(){
             pointCloud.addColor(color);
             
             bucketCloud.addVertex(point);
-            bucketCloud.addColor(color);
+            bucketCloud.addColor(255);
             
             
             int index = point.z>8000?
@@ -130,10 +148,7 @@ void ofApp::drawPointCloud(){
                             point.z<100?
                             0:
                             floor(point.z/8000*bucketNum);
-            /*
-            cloudBuckets[index].addVertex(point);
-            cloudBuckets[index].addColor(color);
-             */
+            
             
             if (point.z){
                 bucketIndex.push_back(index);

@@ -34,11 +34,14 @@ class ofApp : public ofBaseApp{
 	ofxKinect kinect;
     ofImage imgDiff;
     ofPixels prevPx;
+    
 	int angle;
     bool drawptcloud;
     int nearClip, farClip;
     int bucketSize;
     int bucketNum;
+    
+    int h,w;
     
     ofEasyCam cam; // allows to look around the point cloud in 3D space
     
@@ -50,9 +53,9 @@ class ofApp : public ofBaseApp{
     
     ofMesh pointCloud;
     ofMesh bucketCloud;
-    vector<ofMesh> cloudBuckets;
     vector<int> pointIndex;
     vector<int> bucketIndex;
     
     int curBucket;
+    ofImage bucketImg;
 };
