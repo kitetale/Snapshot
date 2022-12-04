@@ -18,7 +18,7 @@ void ofApp::setup(){
     grayImage.allocate(kinect.width,kinect.height);
     grayBg.allocate(kinect.width,kinect.height);
     grayDiff.allocate(kinect.width,kinect.height);
-    learnBg = true;
+    learnBg = false;
     grayThreshold = 30;
 }
 
@@ -26,7 +26,7 @@ void ofApp::setup(){
 void ofApp::update(){
     kinect.update();
     if (kinect.isFrameNew()){
-        colorImage.setFromPixels(kinect.getPixels());
+        colorImage.setFromPixels(kinect.getDepthPixels());
         grayImage = colorImage;
         
         if (learnBg) {
@@ -36,7 +36,7 @@ void ofApp::update(){
         
         grayDiff.absDiff(grayBg, grayImage);
         grayDiff.threshold(grayThreshold);
-        contourFinder.findContours(grayDiff, 10, (kinect.width*kinect.height), 10, true);
+        contourFinder.findContours(grayDiff, 30, (kinect.width*kinect.height), 10, true);
         
         
         /*
@@ -71,9 +71,13 @@ void ofApp::draw(){
         drawPointCloud();
         cam.end();
     } else {
-        //kinect.drawDepth(0,0);
+        //grayImage.draw(0,0);
         colorImage.draw(0,0);
         contourFinder.draw(0,0);
+    }
+    int numBlobs = contourFinder.nBlobs;
+    for (int i=0; i<numBlobs; i++){
+       contourFinder.blobs[i].draw(360,540);
     }
     
     
@@ -224,30 +228,37 @@ void ofApp::keyPressed(int key){
         case 'q':
             nearClip = 0;
             farClip = bucketSize;
+            kinect.setDepthClipping(nearClip,farClip);
             break;
         case 'w':
             nearClip = bucketSize;
             farClip = bucketSize+bucketSize;
+            kinect.setDepthClipping(nearClip,farClip);
             break;
         case 'e':
             nearClip = bucketSize+bucketSize;
             farClip = bucketSize*3;
+            kinect.setDepthClipping(nearClip,farClip);
             break;
         case 'r':
             nearClip = bucketSize*3;
             farClip = bucketSize*4;
+            kinect.setDepthClipping(nearClip,farClip);
             break;
         case 't':
             nearClip = bucketSize*4;
             farClip = bucketSize*5;
+            kinect.setDepthClipping(nearClip,farClip);
             break;
         case 'y':
             nearClip = bucketSize*5;
             farClip = bucketSize*6;
+            kinect.setDepthClipping(nearClip,farClip);
             break;
         case 'u':
             nearClip = bucketSize*6;
             farClip = 8000;
+            kinect.setDepthClipping(nearClip,farClip);
             break;
             
     
