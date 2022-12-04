@@ -9,8 +9,9 @@ void ofApp::setup(){
     
     drawptcloud = false;
     
-    nearClip = 500; // in mm
-    farClip = 1000; // in mm
+    nearClip = 100; // in mm
+    farClip = 2500; // in mm
+    kinect.setDepthClipping(nearClip,farClip);
     bucketNum = 6;
     bucketSize = 8000/bucketNum;
     
@@ -20,14 +21,16 @@ void ofApp::setup(){
     grayDiff.allocate(kinect.width,kinect.height);
     learnBg = false;
     grayThreshold = 30;
+    
+    curBucket = 10;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     kinect.update();
     if (kinect.isFrameNew()){
-        colorImage.setFromPixels(kinect.getDepthPixels());
-        grayImage = colorImage;
+        colorImage.setFromPixels(kinect.getPixels());
+        grayImage.setFromPixels(kinect.getDepthPixels());
         
         if (learnBg) {
             grayBg = grayImage;
@@ -46,8 +49,8 @@ void ofApp::update(){
          */
         
     }
-    
 }
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -71,13 +74,9 @@ void ofApp::draw(){
         drawPointCloud();
         cam.end();
     } else {
-        //grayImage.draw(0,0);
-        colorImage.draw(0,0);
-        contourFinder.draw(0,0);
-    }
-    int numBlobs = contourFinder.nBlobs;
-    for (int i=0; i<numBlobs; i++){
-       contourFinder.blobs[i].draw(360,540);
+        grayImage.draw(0,0, kinect.width/2,kinect.height/2);
+        colorImage.draw(kinect.width/2,0,kinect.width/2,kinect.height/2);
+        //contourFinder.draw(0,0);
     }
     
     
@@ -86,35 +85,61 @@ void ofApp::draw(){
 void ofApp::drawPointCloud(){
     // set modes to only draw points
     pointCloud.clear();
+    bucketCloud.clear();
+    
     //pointCloud.setMode(OF_PRIMITIVE_POINTS);
     pointIndex.clear();
+    
+    bucketIndex.clear();
+    /*
+    cloudBuckets.clear();
+    // init point clouds buckets
+    for (int i=0; i<bucketNum; ++i){
+        ofMesh bucket;
+        bucket.clear();
+        cloudBuckets.push_back(bucket);
+    }
+     */
     
     int h = kinect.height;
     int w = kinect.width;
     
     // point cloud creation
-    for (int y=0; y<h; y++){
-        for (int x=0; x<w; x++){
+    for (int y=0; y<h; ++y){
+        for (int x=0; x<w; ++x){
             ofVec3f point;
             point.set(0,0,0);
             // give me x y z pos in world at this vertex
             point = kinect.getWorldCoordinateAt(x,y);
-            //if (point.z > nearClip && point.z < farClip){
-                // add point to point cloud
-                pointCloud.addVertex(point);
-                
-                // add color from rgb cam to each vertex
-                //pointCloud.addColor(kinect.getColorAt(x,y));
-                // add color from defined color space with z as hue
-
-                ofColor color;
-                color.setHsb(ofMap(point.z,100,8000,0,255), 255, 255);
-                pointCloud.addColor(color);
-                
-            //}
+            
+            // add point to point cloud
+            pointCloud.addVertex(point);
+            // add color from rgb cam to each vertex
+            //pointCloud.addColor(kinect.getColorAt(x,y));
+            // add color from defined color space with z as hue
+            ofColor color;
+            color.setHsb(ofMap(point.z,100,8000,0,255), 255, 255);
+            pointCloud.addColor(color);
+            
+            bucketCloud.addVertex(point);
+            bucketCloud.addColor(color);
+            
+            
+            int index = point.z>8000?
+                        bucketNum-1:
+                            point.z<100?
+                            0:
+                            floor(point.z/8000*bucketNum);
+            /*
+            cloudBuckets[index].addVertex(point);
+            cloudBuckets[index].addColor(color);
+             */
+            
             if (point.z){
+                bucketIndex.push_back(index);
                 pointIndex.push_back(point.z); // valid point to make triangle mesh
             } else {
+                bucketIndex.push_back(-1);
                 pointIndex.push_back(0); // not valid point
             }
         }
@@ -122,8 +147,8 @@ void ofApp::drawPointCloud(){
     
     // vertices into triangular mesh
     int th = 60;
-    for (int y=0; y<h-1; y++){
-        for (int x=0; x<w-1; x++){
+    for (int y=0; y<h-1; ++y){
+        for (int x=0; x<w-1; ++x){
             // check whether all three points are valid points
             if (abs(pointIndex[x+y*w]-pointIndex[(x+1)+y*w])<th &&
                 abs(pointIndex[(x+1)+y*w]-pointIndex[x+((y+1)*w)])<th &&
@@ -149,6 +174,25 @@ void ofApp::drawPointCloud(){
                 pointCloud.addIndex((x+1)+((y+1)*w));
                 pointCloud.addIndex(x+((y+1)*w));
             }
+            
+            // if points in same buckets, add index
+            if (curBucket==bucketIndex[x+y*w] &&
+                bucketIndex[x+y*w]==bucketIndex[(x+1)+y*w] &&
+                bucketIndex[x+((y+1)*w)]==bucketIndex[(x+1)+y*w] &&
+                bucketIndex[x+((y+1)*w)]==bucketIndex[x+y*w]){
+                bucketCloud.addIndex(x+y*w);
+                bucketCloud.addIndex((x+1)+y*w);
+                bucketCloud.addIndex(x+((y+1)*w));
+            }
+            // other side of triangle
+            if (curBucket==bucketIndex[(x+1)+y*w] &&
+                bucketIndex[(x+1)+y*w]==bucketIndex[(x+1)+((y+1)*w)] &&
+                bucketIndex[x+((y+1)*w)]==bucketIndex[(x+1)+((y+1)*w)] &&
+                bucketIndex[x+((y+1)*w)]==bucketIndex[(x+1)+y*w]){
+                bucketCloud.addIndex((x+1)+y*w);
+                bucketCloud.addIndex((x+1)+((y+1)*w));
+                bucketCloud.addIndex(x+((y+1)*w));
+            }
         }
     }
     
@@ -166,7 +210,13 @@ void ofApp::drawPointCloud(){
     ofTranslate(0,0,-1000);
     //pointCloud.drawVertices();
     //pointCloud.drawWireframe();
-    pointCloud.draw();
+    if (curBucket<8){
+        bucketCloud.draw();
+    } else {
+        pointCloud.draw();
+    }
+        
+        
     
     // pop matrix when done
     ofPopMatrix();
@@ -204,7 +254,7 @@ void ofApp::keyPressed(int key){
         
         // change bucket num
         case 'a':
-            if (bucketNum < 8) {
+            if (bucketNum < 7) {
                 ++bucketNum;
                 bucketSize = 8000/bucketNum;
             }
@@ -229,40 +279,50 @@ void ofApp::keyPressed(int key){
             nearClip = 0;
             farClip = bucketSize;
             kinect.setDepthClipping(nearClip,farClip);
+            curBucket = 0;
             break;
         case 'w':
             nearClip = bucketSize;
             farClip = bucketSize+bucketSize;
             kinect.setDepthClipping(nearClip,farClip);
+            curBucket = 1;
             break;
         case 'e':
             nearClip = bucketSize+bucketSize;
             farClip = bucketSize*3;
             kinect.setDepthClipping(nearClip,farClip);
+            curBucket = 2;
             break;
         case 'r':
             nearClip = bucketSize*3;
             farClip = bucketSize*4;
             kinect.setDepthClipping(nearClip,farClip);
+            curBucket = 3;
             break;
         case 't':
             nearClip = bucketSize*4;
             farClip = bucketSize*5;
             kinect.setDepthClipping(nearClip,farClip);
+            curBucket = 4;
             break;
         case 'y':
             nearClip = bucketSize*5;
             farClip = bucketSize*6;
             kinect.setDepthClipping(nearClip,farClip);
+            curBucket = 5;
             break;
         case 'u':
             nearClip = bucketSize*6;
             farClip = 8000;
             kinect.setDepthClipping(nearClip,farClip);
+            curBucket = 6;
             break;
             
-    
         default:
+            nearClip = 100; // in mm
+            farClip = 2500; // in mm
+            kinect.setDepthClipping(nearClip,farClip);
+            curBucket = 10;
             break;
     }
 }

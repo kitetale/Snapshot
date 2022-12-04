@@ -49,5 +49,10 @@ class ofApp : public ofBaseApp{
     int grayThreshold;
     
     ofMesh pointCloud;
+    ofMesh bucketCloud;
+    vector<ofMesh> cloudBuckets;
     vector<int> pointIndex;
+    vector<int> bucketIndex;
+    
+    int curBucket;
 };
