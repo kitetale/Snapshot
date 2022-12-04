@@ -108,7 +108,7 @@ void ofApp::draw(){
         grayImage.draw(0,0, kinect.width/2,kinect.height/2);
         colorImage.draw(kinect.width/2,0,kinect.width/2,kinect.height/2);
         bucketImg.draw(0,kinect.height/2,kinect.width/2,kinect.height/2);
-        contourFinder.draw(kinect.width/2,kinect.height/2);
+        contourFinder.draw(kinect.width/2,kinect.height/2,kinect.width/2,kinect.height/2);
     }
     
     
@@ -270,13 +270,13 @@ void ofApp::keyPressed(int key){
             break;
         
         // change bucket num
-        case 'a':
+        case 'z':
             if (bucketNum < 7) {
                 ++bucketNum;
                 bucketSize = 8000/bucketNum;
             }
             break;
-        case 's':
+        case 'x':
             if (bucketNum > 1) {
                 --bucketNum;
                 bucketSize = 8000/bucketNum;
@@ -334,6 +334,16 @@ void ofApp::keyPressed(int key){
             kinect.setDepthClipping(nearClip,farClip);
             curBucket = 6;
             break;
+            
+        // save contour image
+        case 's':
+        {
+            ofPixels pix;
+            pix.allocate(bucketImg.getWidth(), bucketImg.getHeight(), OF_IMAGE_QUALITY_BEST);
+            pix = bucketImg.getPixels();
+            ofSaveImage(pix, "mySnapshot.png");
+            break;
+        }
             
         default:
             nearClip = 100; // in mm
