@@ -14,16 +14,39 @@ void ofApp::setup(){
     bucketNum = 6;
     bucketSize = 8000/bucketNum;
     
+    colorImage.allocate(kinect.width,kinect.height);
+    grayImage.allocate(kinect.width,kinect.height);
+    grayBg.allocate(kinect.width,kinect.height);
+    grayDiff.allocate(kinect.width,kinect.height);
+    learnBg = true;
+    grayThreshold = 30;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     kinect.update();
     if (kinect.isFrameNew()){
+        colorImage.setFromPixels(kinect.getPixels());
+        grayImage = colorImage;
+        
+        if (learnBg) {
+            grayBg = grayImage;
+            learnBg = false;
+        }
+        
+        grayDiff.absDiff(grayBg, grayImage);
+        grayDiff.threshold(grayThreshold);
+        contourFinder.findContours(grayDiff, 10, (kinect.width*kinect.height), 10, true);
+        
+        
+        /*
         absdiff(kinect,prevPx,imgDiff);
         imgDiff.update();
         copy(kinect,prevPx);
+         */
+        
     }
+    
 }
 
 //--------------------------------------------------------------
@@ -48,8 +71,12 @@ void ofApp::draw(){
         drawPointCloud();
         cam.end();
     } else {
-        kinect.drawDepth(0,0);
+        //kinect.drawDepth(0,0);
+        colorImage.draw(0,0);
+        contourFinder.draw(0,0);
     }
+    
+    
 }
 //--------------------------------------------------------------
 void ofApp::drawPointCloud(){
@@ -134,8 +161,8 @@ void ofApp::drawPointCloud(){
     // translate back
     ofTranslate(0,0,-1000);
     //pointCloud.drawVertices();
-    pointCloud.drawWireframe();
-    //pointCloud.draw();
+    //pointCloud.drawWireframe();
+    pointCloud.draw();
     
     // pop matrix when done
     ofPopMatrix();
@@ -183,6 +210,14 @@ void ofApp::keyPressed(int key){
                 --bucketNum;
                 bucketSize = 8000/bucketNum;
             }
+            break;
+        
+        // change threshold for contour drawing
+        case 'n':
+            ++grayThreshold;
+            break;
+        case 'm':
+            --grayThreshold;
             break;
     
         // switch between different buckets

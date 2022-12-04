@@ -42,6 +42,12 @@ class ofApp : public ofBaseApp{
     
     ofEasyCam cam; // allows to look around the point cloud in 3D space
     
+    ofxCvColorImage colorImage;
+    ofxCvGrayscaleImage grayImage, grayBg, grayDiff;
+    ofxCvContourFinder contourFinder;
+    bool learnBg;
+    int grayThreshold;
+    
     ofMesh pointCloud;
     vector<int> pointIndex;
 };
