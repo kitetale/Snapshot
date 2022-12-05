@@ -31,6 +31,7 @@ class ofApp : public ofBaseApp{
     
     void drawPointCloud();
     void autoCapture();
+    void updateLayers();
 
 	ofxKinect kinect;
     ofImage imgDiff;
@@ -68,7 +69,7 @@ class ofApp : public ofBaseApp{
     
     //timestamps
     int year,month,day,hr,min,sec;
-    int lastMin;
+    int lastMin, lastSec;
     int timeGap;
     int captureIndex;
     vector<string> captureTime; // "mm/dd/yy hr:min:sec"

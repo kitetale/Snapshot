@@ -50,6 +50,7 @@ void ofApp::setup(){
     min = ofGetMinutes();
     sec = ofGetSeconds();
     lastMin = ofGetMinutes();
+    lastSec = ofGetSeconds();
     timeGap = 1; // auto-capture frame every timeGap minutes
     captureIndex = 0;
 }
@@ -76,6 +77,7 @@ void ofApp::update(){
         imgDiff.update();
         copy(kinect,prevPx);
          */
+        updateLayers();
         
     }
     
@@ -83,20 +85,14 @@ void ofApp::update(){
     hr = ofGetHours();
     min = ofGetMinutes();
     sec = ofGetSeconds();
-    if (((min-lastMin) == timeGap) || (min+60-lastMin == timeGap)) {
+    if ((lastSec == sec) && (((min-lastMin) == timeGap) || (min+60-lastMin == timeGap))) {
         autoCapture();
         lastMin = min;
+        lastSec = sec;
     }
 }
 //--------------------------------------------------------------
-void ofApp::autoCapture(){
-    //use precomputed data
-    ofPixels pix;
-    pix.allocate(bucketImg.getWidth(), bucketImg.getHeight(), OF_IMAGE_QUALITY_BEST);
-    pix = bucketImg.getPixels();
-    ofSaveImage(pix,"bucket"+std::to_string(curBucket+1)+"/"+std::to_string(captureIndex)+".png");
-
-    
+void ofApp::updateLayers(){
     // I prob could have mod this part for style, but maybe not at 4am..
     unsigned char* img0_data = img0.getPixels().getData();
     unsigned char* img1_data = img1.getPixels().getData();
@@ -116,6 +112,47 @@ void ofApp::autoCapture(){
                             0:
                             floor(point.z/8000*bucketNum);
             if (index == curBucket) continue;
+            if (index == 0){
+                img0_data[x+y*w] = 255;
+            } else {
+                img0_data[x+y*w] = 0;
+            }
+            if (index == 1){
+                img1_data[x+y*w] = 255-50;
+            } else {
+                img1_data[x+y*w] = 0;
+            }
+            if (index == 2){
+                img2_data[x+y*w] = 255-50-50;
+            } else {
+                img2_data[x+y*w] = 0;
+            }
+            if (index == 3){
+                img3_data[x+y*w] = 255-50*3;
+            } else {
+                img3_data[x+y*w] = 0;
+            }
+            if (index == 4){
+                img4_data[x+y*w] = 255-50*4;
+            } else {
+                img4_data[x+y*w] = 0;
+            }
+            if (index == 5){
+                img5_data[x+y*w] = 255-50*5;
+            } else {
+                img5_data[x+y*w] = 0;
+            }
+            if (index == 6){
+                img6_data[x+y*w] = 255-50*6;
+            } else {
+                img6_data[x+y*w] = 0;
+            }
+            if (index == 7){
+                img7_data[x+y*w] = 255-50*7;
+            } else {
+                img7_data[x+y*w] = 0;
+            }
+            /*
             switch (index){
                 case '0':
                     img0_data[x+y*w] = 255;
@@ -198,17 +235,10 @@ void ofApp::autoCapture(){
                     img7_data[x+y*w] = 255 - 50*7;
                     break;
                 default:
-                    img0_data[x+y*w] = 0;
-                    img1_data[x+y*w] = 0;
-                    img2_data[x+y*w] = 0;
-                    img3_data[x+y*w] = 0;
-                    img4_data[x+y*w] = 0;
-                    img5_data[x+y*w] = 0;
-                    img6_data[x+y*w] = 0;
-                    img7_data[x+y*w] = 0;
+                    
                     break;
             }
-            
+            */
         }
     }
     img0.update();
@@ -220,6 +250,7 @@ void ofApp::autoCapture(){
     img6.update();
     img7.update();
     
+    /*
     ofPixels pix0, pix1, pix2, pix3, pix4, pix5, pix6, pix7;
     pix0.allocate(img0.getWidth(), img0.getHeight(), OF_IMAGE_QUALITY_BEST);
     pix1.allocate(img1.getWidth(), img1.getHeight(), OF_IMAGE_QUALITY_BEST);
@@ -238,24 +269,68 @@ void ofApp::autoCapture(){
     pix5 = img5.getPixels();
     pix6 = img6.getPixels();
     pix7 = img7.getPixels();
+    */
     
-    ofPixels thisPix;
+}
+void ofApp::autoCapture(){
+    //use precomputed data
+    ofPixels pix;
+    pix.allocate(img0.getWidth(), img0.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix = img0.getPixels();
+    ofSaveImage(pix,"bucket"+std::to_string(1)+"/"+std::to_string(captureIndex)+".png");
+    
+    ofPixels pix1;
+    pix1.allocate(img1.getWidth(), img1.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix1 = img1.getPixels();
+    ofSaveImage(pix1,"bucket"+std::to_string(2)+"/"+std::to_string(captureIndex)+".png");
+    
+    ofPixels pix2;
+    pix2.allocate(img2.getWidth(), img2.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix2 = img2.getPixels();
+    ofSaveImage(pix2,"bucket"+std::to_string(3)+"/"+std::to_string(captureIndex)+".png");
+    
+    ofPixels pix3;
+    pix3.allocate(img3.getWidth(), img3.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix3 = img3.getPixels();
+    ofSaveImage(pix3,"bucket"+std::to_string(4)+"/"+std::to_string(captureIndex)+".png");
+    
+    ofPixels pix4;
+    pix4.allocate(img4.getWidth(), img4.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix4 = img4.getPixels();
+    ofSaveImage(pix4,"bucket"+std::to_string(5)+"/"+std::to_string(captureIndex)+".png");
+    
+    ofPixels pix5;
+    pix5.allocate(img5.getWidth(), img5.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix5 = img5.getPixels();
+    ofSaveImage(pix5,"bucket"+std::to_string(6)+"/"+std::to_string(captureIndex)+".png");
+    
+    ofPixels pix6;
+    pix6.allocate(img6.getWidth(), img6.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix6 = img6.getPixels();
+    ofSaveImage(pix6,"bucket"+std::to_string(7)+"/"+std::to_string(captureIndex)+".png");
+    
+
+    /*
     for (int i=0; i<bucketNum; ++i){
         if (i==curBucket) continue;
+        ofPixels thisPix;
+        thisPix.allocate(img0.getWidth(), img0.getHeight(), OF_IMAGE_QUALITY_BEST);
         
         switch (i){
-            case '0': thisPix = pix0; break;
-            case '1': thisPix = pix1; break;
-            case '2': thisPix = pix2; break;
-            case '3': thisPix = pix3; break;
-            case '4': thisPix = pix4; break;
-            case '5': thisPix = pix5; break;
-            case '6': thisPix = pix6; break;
-            default: thisPix = pix7; break;
+            case '0': thisPix = img0.getPixels(); break;
+            case '1': thisPix = img1.getPixels(); break;
+            case '2': thisPix = img2.getPixels(); break;
+            case '3': thisPix = img3.getPixels(); break;
+            case '4': thisPix = img4.getPixels(); break;
+            case '5': thisPix = img5.getPixels(); break;
+            case '6': thisPix = img6.getPixels(); break;
+            default: thisPix = img7.getPixels(); break;
         }
         
         ofSaveImage(thisPix,"bucket"+std::to_string(i+1)+"/"+std::to_string(captureIndex)+".png");
     }
+     */
+    
     
     ++captureIndex;
 }
@@ -315,9 +390,15 @@ void ofApp::draw(){
         bucketImg.draw(0,kinect.height/2,kinect.width/2,kinect.height/2);
         contourFinder.draw(kinect.width/2,kinect.height/2,kinect.width/2,kinect.height/2);
         finalImg.draw(0,kinect.height,kinect.width/2,kinect.height/2);
+        img0.draw(kinect.width/2, kinect.height,kinect.width/2,kinect.height/2);
+        img1.draw(kinect.width,0,kinect.width/2,kinect.height/2);
+        img2.draw(kinect.width,kinect.height/2,kinect.width/2,kinect.height/2);
+        img3.draw(kinect.width,kinect.height,kinect.width/2,kinect.height/2);
+        
         
         // draw time on screen
-        ofDrawBitmapString(std::to_string(hr)+":"+std::to_string(min)+":"+std::to_string(sec), kinect.width/2, kinect.height*1.5);
+        ofDrawBitmapString(std::to_string(hr)+":"+std::to_string(min)+":"+std::to_string(sec), kinect.width/2, kinect.height*1.5+20);
+        ofDrawBitmapString("lastMin: "+std::to_string(lastMin),kinect.width/2,kinect.height*1.5+30);
     }
     
     
