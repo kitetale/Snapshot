@@ -47,12 +47,15 @@ void ofApp::setup(){
     month = ofGetMonth();
     day = ofGetDay();
     hr = ofGetHours();
-    min = ofGetMinutes();
+    minutes = ofGetMinutes();
     sec = ofGetSeconds();
     lastMin = ofGetMinutes();
     lastSec = ofGetSeconds();
     timeGap = 1; // auto-capture frame every timeGap minutes
     captureIndex = 0;
+    snapshotIndex = 0;
+    
+    output.allocate(w,h, OF_IMAGE_GRAYSCALE);
 }
 
 //--------------------------------------------------------------
@@ -83,11 +86,12 @@ void ofApp::update(){
     
     //update time
     hr = ofGetHours();
-    min = ofGetMinutes();
+    minutes = ofGetMinutes();
     sec = ofGetSeconds();
-    if ((lastSec == sec) && (((min-lastMin) == timeGap) || (min+60-lastMin == timeGap))) {
+    if ((lastSec == sec) && (((minutes-lastMin) == timeGap) || (minutes+60-lastMin == timeGap))) {
         autoCapture();
-        lastMin = min;
+        captureTime.push_back(std::to_string(year)+"/"+std::to_string(month)+"/"+std::to_string(day)+" "+std::to_string(hr)+":"+std::to_string(minutes)+":"+std::to_string(sec));
+        lastMin = minutes;
         lastSec = sec;
     }
 }
@@ -390,14 +394,11 @@ void ofApp::draw(){
         bucketImg.draw(0,kinect.height/2,kinect.width/2,kinect.height/2);
         contourFinder.draw(kinect.width/2,kinect.height/2,kinect.width/2,kinect.height/2);
         finalImg.draw(0,kinect.height,kinect.width/2,kinect.height/2);
-        img0.draw(kinect.width/2, kinect.height,kinect.width/2,kinect.height/2);
-        img1.draw(kinect.width,0,kinect.width/2,kinect.height/2);
-        img2.draw(kinect.width,kinect.height/2,kinect.width/2,kinect.height/2);
-        img3.draw(kinect.width,kinect.height,kinect.width/2,kinect.height/2);
+        output.draw(kinect.width/2, kinect.height,kinect.width/2,kinect.height/2);
         
         
         // draw time on screen
-        ofDrawBitmapString(std::to_string(hr)+":"+std::to_string(min)+":"+std::to_string(sec), kinect.width/2, kinect.height*1.5+20);
+        ofDrawBitmapString(std::to_string(hr)+":"+std::to_string(minutes)+":"+std::to_string(sec), kinect.width/2, kinect.height*1.5+20);
         ofDrawBitmapString("lastMin: "+std::to_string(lastMin),kinect.width/2,kinect.height*1.5+30);
     }
     
@@ -538,6 +539,95 @@ void ofApp::exit() {
 }
 
 //--------------------------------------------------------------
+void ofApp::makeSnapshot() {
+    if (captureIndex<1) return;
+    // generate random numbers
+    vector<int> randomNumbers;
+    for (int i=0; i<bucketNum; ++i) {
+        int newNum = (int) ofRandom(0,captureIndex+1); // generates an int between [0,captureIndex]
+        randomNumbers.push_back(newNum);
+    }
+    sort(randomNumbers.begin(), randomNumbers.end()); // sort so that we can pull in order
+    
+    // get images at these index from each bucket
+    // 0: oldest , captureIndex: newest
+    
+    ofImage layer0, layer1, layer2, layer3, layer4, layer5, layer6, layer7;
+    output.allocate(w,h, OF_IMAGE_GRAYSCALE);
+    
+    unsigned char *pix0, *pix1, *pix2, *pix3, *pix4, *pix5, *pix6, *pix7;
+    
+    for (int i=0; i<bucketNum; ++i){
+        if (i==0){
+            layer0.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
+            layer0.setImageType(OF_IMAGE_GRAYSCALE);
+            pix0 = layer0.getPixels().getData();
+        }
+        if (i==1){
+            layer1.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
+            layer1.setImageType(OF_IMAGE_GRAYSCALE);
+            pix1 = layer1.getPixels().getData();
+        }
+        if (i==2){
+            layer2.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
+            layer2.setImageType(OF_IMAGE_GRAYSCALE);
+            pix2 = layer2.getPixels().getData();
+        }
+        if (i==3){
+            layer3.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
+            layer3.setImageType(OF_IMAGE_GRAYSCALE);
+            pix3 = layer3.getPixels().getData();
+        }
+        if (i==4){
+            layer4.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
+            layer4.setImageType(OF_IMAGE_GRAYSCALE);
+            pix4 = layer4.getPixels().getData();
+        }
+        if (i==5){
+            layer5.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
+            layer5.setImageType(OF_IMAGE_GRAYSCALE);
+            pix5 = layer5.getPixels().getData();
+        }
+        if (i==6){
+            layer6.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
+            layer6.setImageType(OF_IMAGE_GRAYSCALE);
+            pix6 = layer6.getPixels().getData();
+        }
+        if (i==7){
+            layer7.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
+            layer7.setImageType(OF_IMAGE_GRAYSCALE);
+            pix7 = layer7.getPixels().getData();
+        }
+    }
+    
+    //combine images
+    unsigned char* outputPix = output.getPixels().getData();
+    for (int y=0; y<h; ++y){
+        for (int x=0; x<w; ++x){
+            int idx = x+y*w;
+            unsigned char pixVal = MIN(255, max(pix0[idx],pix1[idx]));
+            pixVal = MIN(255, max(pixVal,pix2[idx]));
+            pixVal = MIN(255, max(pixVal,pix3[idx]));
+            pixVal = MIN(255, max(pixVal,pix4[idx]));
+            pixVal = MIN(255, max(pixVal,pix5[idx]));
+            pixVal = MIN(255, max(pixVal,pix6[idx]));
+            pixVal = MIN(255, max(pixVal,pix7[idx]));
+                                            
+            outputPix[idx] = pixVal;
+        }
+    }
+    
+    output.update();
+    
+    ofPixels pix;
+    pix.allocate(output.getWidth(), output.getHeight(), OF_IMAGE_QUALITY_BEST);
+    pix = output.getPixels();
+    ofSaveImage(pix,"Snapshots/snapshot#"+std::to_string(snapshotIndex)+".png");
+    ++snapshotIndex;
+    
+}
+
+//--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key){
         case OF_KEY_UP:
@@ -625,7 +715,7 @@ void ofApp::keyPressed(int key){
             curBucket = 6;
             break;
             
-        // save contour image
+        // save viewport image
         case 's':
         {
             ofPixels pix;
@@ -634,6 +724,11 @@ void ofApp::keyPressed(int key){
             ofSaveViewport("mySnapshot.png");
             break;
         }
+            
+        // create snapshot
+        case 'c':
+            makeSnapshot();
+            break;
             
         default:
             nearClip = 100; // in mm
