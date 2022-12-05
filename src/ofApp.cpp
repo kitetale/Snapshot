@@ -56,6 +56,7 @@ void ofApp::setup(){
     snapshotIndex = 0;
     
     output.allocate(w,h, OF_IMAGE_GRAYSCALE);
+    font.load("Montserrat.ttf", 20);
 }
 
 //--------------------------------------------------------------
@@ -389,17 +390,24 @@ void ofApp::draw(){
         bucketImg.update();
         finalImg.update();
 
+        /*
         grayImage.draw(0,0, kinect.width/2,kinect.height/2);
         colorImage.draw(kinect.width/2,0,kinect.width/2,kinect.height/2);
         bucketImg.draw(0,kinect.height/2,kinect.width/2,kinect.height/2);
         contourFinder.draw(kinect.width/2,kinect.height/2,kinect.width/2,kinect.height/2);
         finalImg.draw(0,kinect.height,kinect.width/2,kinect.height/2);
-        output.draw(kinect.width/2, kinect.height,kinect.width/2,kinect.height/2);
+        */
         
+        //ofDrawBitmapString(std::to_string(hr)+":"+std::to_string(minutes)+":"+std::to_string(sec), kinect.width/2, kinect.height*1.5+20);
+        //ofDrawBitmapString("lastMin: "+std::to_string(lastMin),kinect.width/2,kinect.height*1.5+30);
+        ofBackground(255);
+        ofSetColor(0,0,0);
+        output.draw(50,80,w,h);
+        float textW = font.stringWidth("Snapshot #"+std::to_string(snapshotIndex));
+        font.drawString("Snapshot #"+std::to_string(snapshotIndex),ofGetWidth()/2-textW/2,60);
         
-        // draw time on screen
-        ofDrawBitmapString(std::to_string(hr)+":"+std::to_string(minutes)+":"+std::to_string(sec), kinect.width/2, kinect.height*1.5+20);
-        ofDrawBitmapString("lastMin: "+std::to_string(lastMin),kinect.width/2,kinect.height*1.5+30);
+        float timeW = font.stringWidth(startT + " - "+endT);
+        font.drawString(startT + " - "+endT, ofGetWidth()/2-timeW/2, 650);
     }
     
     
@@ -548,6 +556,8 @@ void ofApp::makeSnapshot() {
         randomNumbers.push_back(newNum);
     }
     sort(randomNumbers.begin(), randomNumbers.end()); // sort so that we can pull in order
+    startT = captureTime[randomNumbers[0]];
+    endT = captureTime[randomNumbers[-1]];
     
     // get images at these index from each bucket
     // 0: oldest , captureIndex: newest

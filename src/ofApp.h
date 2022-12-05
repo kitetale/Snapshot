@@ -74,6 +74,9 @@ class ofApp : public ofBaseApp{
     int timeGap;
     int captureIndex, snapshotIndex;
     vector<string> captureTime; // "mm/dd/yy hr:min:sec"
+    string startT;
+    string endT;
     ofImage output; // output of snapshot
     
+    ofTrueTypeFont font;
 };
