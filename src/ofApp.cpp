@@ -559,15 +559,24 @@ void ofApp::exit() {
 void ofApp::makeSnapshot() {
     if (captureIndex<1) return;
     // generate random numbers
-    vector<int> randomNumbers;
+    vector<int> randomNumbers(bucketNum, 0);
     randomNumbers.clear();
     for (int i=0; i<bucketNum; ++i) {
-        int newNum = (int) ofRandom(0,captureIndex+1); // generates an int between [0,captureIndex]
+        int newNum = (int) ofRandom(0,captureIndex); // generates an int between [0,captureIndex]
         randomNumbers.push_back(newNum);
     }
     sort(randomNumbers.begin(), randomNumbers.end()); // sort so that we can pull in order
+    
+    std::cout<<"captureIndex: "<<captureIndex<<std::endl;
+    std::cout<<"[";
+    for (int x : randomNumbers){
+        std::cout<<std::to_string(x)+" , ";
+    }
+    std::cout<<"]"<<std::endl;
+    
     startT = captureTime[randomNumbers[0]];
-    endT = captureTime[randomNumbers[-1]];
+    endT = captureTime[randomNumbers[bucketNum-1]];
+    std::cout<<"startT: "<<captureTime[randomNumbers[0]] << " endT: "<<captureTime[randomNumbers[bucketNum-1]]<<std::endl;
     
     // get images at these index from each bucket
     // 0: oldest , captureIndex: newest
@@ -608,16 +617,20 @@ void ofApp::makeSnapshot() {
             layer5.setImageType(OF_IMAGE_GRAYSCALE);
             pix5 = layer5.getPixels().getData();
         }
+        /*
         if (i==6){
             layer6.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
             layer6.setImageType(OF_IMAGE_GRAYSCALE);
             pix6 = layer6.getPixels().getData();
         }
+         */
+        /*
         if (i==7){
             layer7.load("bucket"+std::to_string(i+1)+"/"+std::to_string(randomNumbers[i])+".png");
             layer7.setImageType(OF_IMAGE_GRAYSCALE);
             pix7 = layer7.getPixels().getData();
         }
+         */
     }
     
     //combine images
@@ -630,8 +643,8 @@ void ofApp::makeSnapshot() {
             pixVal = MIN(255, max(pixVal,pix3[idx]));
             pixVal = MIN(255, max(pixVal,pix4[idx]));
             pixVal = MIN(255, max(pixVal,pix5[idx]));
-            pixVal = MIN(255, max(pixVal,pix6[idx]));
-            pixVal = MIN(255, max(pixVal,pix7[idx]));
+            //pixVal = MIN(255, max(pixVal,pix6[idx]));
+            //pixVal = MIN(255, max(pixVal,pix7[idx]));
                                             
             outputPix[idx] = pixVal;
         }
@@ -642,7 +655,9 @@ void ofApp::makeSnapshot() {
     ofPixels pix;
     pix.allocate(output.getWidth(), output.getHeight(), OF_IMAGE_QUALITY_BEST);
     pix = output.getPixels();
-    ofSaveImage(pix,"Snapshots/snapshot#"+std::to_string(snapshotIndex)+".png");
+    ofSaveImage(pix,"SnapshotImgs/snapshot#"+std::to_string(snapshotIndex)+".png");
+    output.draw(50,80,w,h);
+    ofSaveViewport("Snapshots/snapshot#"+std::to_string(snapshotIndex)+".png");
     ++snapshotIndex;
     
 }
