@@ -83,4 +83,5 @@ class ofApp : public ofBaseApp{
     ofTrueTypeFont font;
     
     ofxThermalPrinter printer;
+    bool viewCurrent;
 };

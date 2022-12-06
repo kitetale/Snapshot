@@ -62,7 +62,8 @@ void ofApp::setup(){
     bucketIndex.clear();
     captureTime.clear();
     
-    printer.open("/dev/tty."); //TODO: fill out printer info (e.g. "/dev/tty.PL2303-00002014")
+    //printer.open("/dev/tty."); //TODO: fill out printer info (e.g. "/dev/tty.PL2303-00002014")
+    viewCurrent = false;
 }
 
 //--------------------------------------------------------------
@@ -95,7 +96,10 @@ void ofApp::update(){
     hr = ofGetHours();
     minutes = ofGetMinutes();
     sec = ofGetSeconds();
-    if ((lastSec == sec) && (((minutes-lastMin) == timeGap) || (minutes+60-lastMin == timeGap))) {
+    // autocapture every timeGap min
+    //if ((lastSec == sec) && (((minutes-lastMin) == timeGap) || (minutes+60-lastMin == timeGap))) {
+    // autocapture every 10 seconds
+    if ((sec - lastSec == 10) || (sec+60-lastSec == 10)){
         autoCapture();
         captureTime.push_back(std::to_string(year)+"/"+std::to_string(month)+"/"+std::to_string(day)+" "+std::to_string(hr)+":"+std::to_string(minutes)+":"+std::to_string(sec));
         lastMin = minutes;
@@ -408,8 +412,12 @@ void ofApp::draw(){
         //ofDrawBitmapString("lastMin: "+std::to_string(lastMin),kinect.width/2,kinect.height*1.5+30);
         ofBackground(255);
         ofSetColor(255,255,255);
-        //finalImg.draw(50,80,w,h);
-        output.draw(50,80,w,h);
+
+        if (viewCurrent) {
+            finalImg.draw(50,80,w,h);
+        } else {
+            output.draw(50,80,w,h);
+        }
         
         ofSetColor(0,0,0);
         float textW = font.stringWidth("Snapshot #"+std::to_string(snapshotIndex));
@@ -417,8 +425,9 @@ void ofApp::draw(){
         
         float timeW = font.stringWidth(startT + " - "+endT);
         font.drawString(startT + " - "+endT, ofGetWidth()/2-timeW/2, 650);
-        string location = "TCS Hall";
+        string location = "Bedroom";
         font.drawString(location,ofGetWidth()/2-font.stringWidth(location)/2, 700);
+        ofSetColor(255,255,255);
     }
     
     
@@ -564,10 +573,19 @@ void ofApp::makeSnapshot() {
     // generate random numbers
     vector<int> randomNumbers(bucketNum, 0);
     randomNumbers.clear();
-    for (int i=0; i<bucketNum; ++i) {
+    for (int i=0; i<bucketNum-1; ++i) {
         int newNum = (int) ofRandom(0,captureIndex); // generates an int between [0,captureIndex]
         randomNumbers.push_back(newNum);
     }
+    
+    if (viewCurrent){
+        randomNumbers.push_back(captureIndex); // last one must be current
+    } else {
+        // else just generate another number
+        int newNum = (int) ofRandom(0,captureIndex); // generates an int between [0,captureIndex]
+        randomNumbers.push_back(newNum);
+    }
+    
     sort(randomNumbers.begin(), randomNumbers.end()); // sort so that we can pull in order
     
     std::cout<<"captureIndex: "<<captureIndex<<std::endl;
@@ -776,7 +794,11 @@ void ofApp::keyPressed(int key){
         // create snapshot
         case 'c':
             makeSnapshot();
-            printSnapshot();
+            //printSnapshot(); TODO: uncomment once printer connected
+            break;
+        // change to view current view
+        case 'v':
+            viewCurrent = !viewCurrent;
             break;
             
         default:
