@@ -1,6 +1,8 @@
 # Snapshot
 Snapshot is a Kinect-based project that displays a composite image of what was captured over time through depth. 
 
+![Snapshot example](/bin/data/Snapshots/snapshot%233.png)
+
 ## Controls
 * **'c'** to capture & print snapshot
 * **'v'** to toggle between capture view and real-time view
