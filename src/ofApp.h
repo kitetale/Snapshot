@@ -5,6 +5,7 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxGui.h"
+#include "ofxThermalPrinter.h"
 
 using namespace ofxCv;
 using namespace cv;
@@ -33,6 +34,7 @@ class ofApp : public ofBaseApp{
     void autoCapture();
     void updateLayers();
     void makeSnapshot();
+    void printSnapshot();
 
 	ofxKinect kinect;
     ofImage imgDiff;
@@ -79,4 +81,6 @@ class ofApp : public ofBaseApp{
     ofImage output; // output of snapshot
     
     ofTrueTypeFont font;
+    
+    ofxThermalPrinter printer;
 };

@@ -61,6 +61,8 @@ void ofApp::setup(){
     pointIndex.clear();
     bucketIndex.clear();
     captureTime.clear();
+    
+    printer.open("/dev/tty."); //TODO: fill out printer info (e.g. "/dev/tty.PL2303-00002014")
 }
 
 //--------------------------------------------------------------
@@ -553,6 +555,7 @@ void ofApp::drawPointCloud(){
 void ofApp::exit() {
     kinect.setCameraTiltAngle(0);
     kinect.close();
+    printer.close();
 }
 
 //--------------------------------------------------------------
@@ -663,6 +666,16 @@ void ofApp::makeSnapshot() {
 }
 
 //--------------------------------------------------------------
+void ofApp::printSnapshot() {
+    //printer.setAlign(MIDDLE);
+    ofImage viewport;
+    viewport.load("Snapshots/snapshot#"+std::to_string(snapshotIndex-1)+".png");
+    viewport.setImageType(OF_IMAGE_GRAYSCALE);
+    printer.print(viewport);
+    printer.println("");
+}
+
+//--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key){
         case OF_KEY_UP:
@@ -763,6 +776,7 @@ void ofApp::keyPressed(int key){
         // create snapshot
         case 'c':
             makeSnapshot();
+            printSnapshot();
             break;
             
         default:

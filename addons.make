@@ -2,3 +2,4 @@ ofxOpenCv
 ofxCv
 ofxGui
 ofxKinect
+ofxThermalPrinter

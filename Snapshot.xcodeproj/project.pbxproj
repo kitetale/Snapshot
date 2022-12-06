@@ -9,6 +9,216 @@
 		<string>46</string>
 		<key>objects</key>
 		<dict>
+			<key>98ADB666740F3363592D12E5</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>v8stdint.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/v8stdint.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>A3566AAF187800FA64E13053</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>serial.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/serial.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>0A11B0D3E9FA57D1830C6F32</key>
+			<dict>
+				<key>fileRef</key>
+				<string>59CDC7B3B6C6AA32C9629981</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>59CDC7B3B6C6AA32C9629981</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>serial.cc</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/serial.cc</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>5488CC880FE8DB73E2E25196</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxThermalPrinter.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/ofxThermalPrinter.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>843239FD544C9E513AED0D86</key>
+			<dict>
+				<key>fileRef</key>
+				<string>462B53C0C5114B8263832B0E</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>462B53C0C5114B8263832B0E</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxThermalPrinter.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/ofxThermalPrinter.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>2B7746AAEE1A135555098A74</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>win.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/impl/win.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>9B8C0F8F27649A68F9C09038</key>
+			<dict>
+				<key>fileRef</key>
+				<string>F91F6CABA607C167098A19F3</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>F91F6CABA607C167098A19F3</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>win.cc</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/impl/win.cc</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>623B2DFF0BE80405417C3B2B</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>unix.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/impl/unix.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>A4040CA956B1390EEE7B6856</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>9EEAD131DCD3B3BAFA73A023</string>
+					<string>623B2DFF0BE80405417C3B2B</string>
+					<string>F91F6CABA607C167098A19F3</string>
+					<string>2B7746AAEE1A135555098A74</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>impl</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>2ECD902C0FC04BCC03ADE5CD</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>A4040CA956B1390EEE7B6856</string>
+					<string>462B53C0C5114B8263832B0E</string>
+					<string>5488CC880FE8DB73E2E25196</string>
+					<string>59CDC7B3B6C6AA32C9629981</string>
+					<string>A3566AAF187800FA64E13053</string>
+					<string>98ADB666740F3363592D12E5</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>7A5FE121D3645C5252E80CBD</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>2ECD902C0FC04BCC03ADE5CD</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxThermalPrinter</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>71338E2D30035A3C3F03EB56</key>
+			<dict>
+				<key>fileRef</key>
+				<string>9EEAD131DCD3B3BAFA73A023</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>9EEAD131DCD3B3BAFA73A023</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>unix.cc</string>
+				<key>path</key>
+				<string>../../../addons/ofxThermalPrinter/src/impl/unix.cc</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
 			<key>44EF97BDD915E758777A9A8C</key>
 			<dict>
 				<key>explicitFileType</key>
@@ -10411,6 +10621,8 @@ fi
 						<string>../../../addons/ofxKinect/libs/libusb/lib/osx</string>
 						<string>../../../addons/ofxKinect/src</string>
 						<string>../../../addons/ofxKinect/src/extra</string>
+						<string>../../../addons/ofxThermalPrinter/src</string>
+						<string>../../../addons/ofxThermalPrinter/src/impl</string>
 					</array>
 					<key>MACOSX_DEPLOYMENT_TARGET</key>
 					<string>10.9</string>
@@ -10540,6 +10752,8 @@ fi
 						<string>../../../addons/ofxKinect/libs/libusb/lib/osx</string>
 						<string>../../../addons/ofxKinect/src</string>
 						<string>../../../addons/ofxKinect/src/extra</string>
+						<string>../../../addons/ofxThermalPrinter/src</string>
+						<string>../../../addons/ofxThermalPrinter/src/impl</string>
 					</array>
 					<key>ICON</key>
 					<string>$(ICON_NAME_RELEASE)</string>
@@ -10594,6 +10808,7 @@ fi
 					<string>6025FAF6414C2CA589764D26</string>
 					<string>480A780D8D0308AE4A368801</string>
 					<string>9683228C705CA3FF4F2EA945</string>
+					<string>7A5FE121D3645C5252E80CBD</string>
 				</array>
 				<key>isa</key>
 				<string>PBXGroup</string>
@@ -13447,6 +13662,8 @@ fi
 						<string>../../../addons/ofxKinect/libs/libusb/lib/osx</string>
 						<string>../../../addons/ofxKinect/src</string>
 						<string>../../../addons/ofxKinect/src/extra</string>
+						<string>../../../addons/ofxThermalPrinter/src</string>
+						<string>../../../addons/ofxThermalPrinter/src/impl</string>
 					</array>
 					<key>MACOSX_DEPLOYMENT_TARGET</key>
 					<string>10.9</string>
@@ -13596,6 +13813,8 @@ fi
 						<string>../../../addons/ofxKinect/libs/libusb/lib/osx</string>
 						<string>../../../addons/ofxKinect/src</string>
 						<string>../../../addons/ofxKinect/src/extra</string>
+						<string>../../../addons/ofxThermalPrinter/src</string>
+						<string>../../../addons/ofxThermalPrinter/src/impl</string>
 					</array>
 					<key>MACOSX_DEPLOYMENT_TARGET</key>
 					<string>10.9</string>
@@ -13661,6 +13880,10 @@ fi
 					<string>255A7B680DC81E543C875794</string>
 					<string>7ADB04AF67C568EAFAEBA546</string>
 					<string>686B0DF6249B52E1A85B39EC</string>
+					<string>71338E2D30035A3C3F03EB56</string>
+					<string>9B8C0F8F27649A68F9C09038</string>
+					<string>843239FD544C9E513AED0D86</string>
+					<string>0A11B0D3E9FA57D1830C6F32</string>
 				</array>
 				<key>isa</key>
 				<string>PBXSourcesBuildPhase</string>
@@ -13848,6 +14071,8 @@ fi
 						<string>../../../addons/ofxKinect/libs/libusb/lib/osx</string>
 						<string>../../../addons/ofxKinect/src</string>
 						<string>../../../addons/ofxKinect/src/extra</string>
+						<string>../../../addons/ofxThermalPrinter/src</string>
+						<string>../../../addons/ofxThermalPrinter/src/impl</string>
 					</array>
 					<key>ICON</key>
 					<string>$(ICON_NAME_DEBUG)</string>
@@ -14002,6 +14227,8 @@ fi
 						<string>../../../addons/ofxKinect/libs/libusb/lib/osx</string>
 						<string>../../../addons/ofxKinect/src</string>
 						<string>../../../addons/ofxKinect/src/extra</string>
+						<string>../../../addons/ofxThermalPrinter/src</string>
+						<string>../../../addons/ofxThermalPrinter/src/impl</string>
 					</array>
 					<key>ICON</key>
 					<string>$(ICON_NAME_RELEASE)</string>

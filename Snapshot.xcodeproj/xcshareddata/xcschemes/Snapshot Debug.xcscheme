@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-               BuildableName = "Snapshot.app"
-               BlueprintName = "Snapshot"
+               BuildableName = "emptyExample.app"
+               BlueprintName = "emptyExample"
                ReferencedContainer = "container:Snapshot.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -31,8 +31,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "Snapshot.app"
-            BlueprintName = "Snapshot"
+            BuildableName = "emptyExample.app"
+            BlueprintName = "emptyExample"
             ReferencedContainer = "container:Snapshot.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -54,8 +54,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "Snapshot.app"
-            BlueprintName = "Snapshot"
+            BuildableName = "emptyExample.app"
+            BlueprintName = "emptyExample"
             ReferencedContainer = "container:Snapshot.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -71,8 +71,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "Snapshot.app"
-            BlueprintName = "Snapshot"
+            BuildableName = "emptyExample.app"
+            BlueprintName = "emptyExample"
             ReferencedContainer = "container:Snapshot.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
