@@ -57,6 +57,10 @@ void ofApp::setup(){
     
     output.allocate(w,h, OF_IMAGE_GRAYSCALE);
     font.load("Montserrat.ttf", 20);
+    
+    pointIndex.clear();
+    bucketIndex.clear();
+    captureTime.clear();
 }
 
 //--------------------------------------------------------------
@@ -401,13 +405,18 @@ void ofApp::draw(){
         //ofDrawBitmapString(std::to_string(hr)+":"+std::to_string(minutes)+":"+std::to_string(sec), kinect.width/2, kinect.height*1.5+20);
         //ofDrawBitmapString("lastMin: "+std::to_string(lastMin),kinect.width/2,kinect.height*1.5+30);
         ofBackground(255);
-        ofSetColor(0,0,0);
+        ofSetColor(255,255,255);
+        //finalImg.draw(50,80,w,h);
         output.draw(50,80,w,h);
+        
+        ofSetColor(0,0,0);
         float textW = font.stringWidth("Snapshot #"+std::to_string(snapshotIndex));
         font.drawString("Snapshot #"+std::to_string(snapshotIndex),ofGetWidth()/2-textW/2,60);
         
         float timeW = font.stringWidth(startT + " - "+endT);
         font.drawString(startT + " - "+endT, ofGetWidth()/2-timeW/2, 650);
+        string location = "TCS Hall";
+        font.drawString(location,ofGetWidth()/2-font.stringWidth(location)/2, 700);
     }
     
     
@@ -551,6 +560,7 @@ void ofApp::makeSnapshot() {
     if (captureIndex<1) return;
     // generate random numbers
     vector<int> randomNumbers;
+    randomNumbers.clear();
     for (int i=0; i<bucketNum; ++i) {
         int newNum = (int) ofRandom(0,captureIndex+1); // generates an int between [0,captureIndex]
         randomNumbers.push_back(newNum);
