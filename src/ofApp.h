@@ -82,6 +82,7 @@ class ofApp : public ofBaseApp{
     ofImage output; // output of snapshot
     
     ofTrueTypeFont font;
+    ofTrueTypeFont font2;
     
     ofxThermalPrinter printer;
     bool viewCurrent;

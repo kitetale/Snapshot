@@ -57,6 +57,7 @@ void ofApp::setup(){
     
     output.allocate(w,h, OF_IMAGE_GRAYSCALE);
     font.load("Montserrat.ttf", 20);
+    font2.load("RubikMonoOne.ttf",40);
     
     pointIndex.clear();
     bucketIndex.clear();
@@ -416,19 +417,29 @@ void ofApp::draw(){
         ofSetColor(255,255,255);
 
         if (viewCurrent) {
-            finalImg.draw(50,80,w,h);
+            finalImg.draw(50,170,w,h); //sw sh
         } else {
-            output.draw(50,80,w,h);
+            output.draw(50,170,w,h); //sw sh
         }
         
         ofSetColor(0,0,0);
         float textW = font.stringWidth("Snapshot #"+std::to_string(snapshotIndex));
-        font.drawString("Snapshot #"+std::to_string(snapshotIndex),ofGetWidth()/2-textW/2,60);
+        font.drawString("Snapshot #"+std::to_string(snapshotIndex),50+w/2-textW/2,120);
         
         float timeW = font.stringWidth(startT + " - "+endT);
-        font.drawString(startT + " - "+endT, ofGetWidth()/2-timeW/2, 650);
-        string location = "TCS First Floor";
-        font.drawString(location,ofGetWidth()/2-font.stringWidth(location)/2, 700);
+        font.drawString(startT + " - "+endT, 50+w/2-timeW/2, 720);
+        string location = "STUDIO for Creative Inquiry";
+        float locW = font.stringWidth(location);
+        font.drawString(location,50+w/2-locW/2, 790);
+        
+        float pressW = font2.stringWidth("Press ");
+        font2.drawString("Press ", 560+pressW, 400);
+        ofSetColor(251,138,48);
+        font2.drawString("'c'", 560+pressW+pressW, 400);
+        ofSetColor(0,0,0);
+        font2.drawString(" to", 560+pressW+pressW+font2.stringWidth("'c'"), 400);
+        font2.drawString("take a Snapshot!", 730, 480);
+        
         ofSetColor(255,255,255);
     }
     
@@ -571,7 +582,11 @@ void ofApp::exit() {
 
 //--------------------------------------------------------------
 void ofApp::makeSnapshot() {
-    if (captureIndex<1) return;
+    //if (captureIndex<1) return;
+    autoCapture();
+    captureTime.push_back(std::to_string(year)+"/"+std::to_string(month)+"/"+std::to_string(day)+" "+std::to_string(hr)+":"+std::to_string(minutes)+":"+std::to_string(sec));
+    lastMin = minutes;
+    lastSec = sec;
     // generate random numbers
     vector<int> randomNumbers(bucketNum, 0);
     randomNumbers.clear();
@@ -580,13 +595,13 @@ void ofApp::makeSnapshot() {
         randomNumbers.push_back(newNum);
     }
     
-    if (viewCurrent){
-        randomNumbers.push_back(captureIndex); // last one must be current
-    } else {
+    //if (viewCurrent){
+    randomNumbers.push_back(captureIndex-1); // last one must be current
+    /*} else {
         // else just generate another number
         int newNum = (int) ofRandom(0,captureIndex); // generates an int between [0,captureIndex]
         randomNumbers.push_back(newNum);
-    }
+    }*/
     
     sort(randomNumbers.begin(), randomNumbers.end()); // sort so that we can pull in order
     
@@ -679,7 +694,7 @@ void ofApp::makeSnapshot() {
     pix.allocate(output.getWidth(), output.getHeight(), OF_IMAGE_QUALITY_BEST);
     pix = output.getPixels();
     ofSaveImage(pix,"SnapshotImgs/snapshot#"+std::to_string(snapshotIndex)+".png");
-    output.draw(50,80,w,h);
+    output.draw(50,170,w,h); // TODO: sw sh
     ofSaveViewport("Snapshots/snapshot#"+std::to_string(snapshotIndex)+".png");
     ++snapshotIndex;
     
@@ -708,7 +723,7 @@ void ofApp::printSnapshot() {
     printer.println(startT);
     printer.println(" - ");
     printer.println(endT);
-    printer.println("TCS First Floor"); //location
+    printer.println("STUDIO for Creative Inquiry"); //location
     
     
     printer.setAlign(RIGHT);
@@ -722,7 +737,7 @@ void ofApp::belowText(){
     printer.println(startT);
     printer.println(" - ");
     printer.println(endT);
-    printer.println("TCS First Floor"); //location
+    printer.println("STUDIO for Creative Inquiry"); //location
     
     
     printer.setAlign(RIGHT);
@@ -874,7 +889,7 @@ void ofApp::keyPressed(int key){
             break;
                
         // change to point cloud mode
-        case 'p':
+       /* case 'p':
             drawptcloud = !drawptcloud;
             break;
         
@@ -953,23 +968,25 @@ void ofApp::keyPressed(int key){
             ofSaveViewport("mySnapshot.png");
             break;
         }
-            
+            */
         // create snapshot
         case 'c':
             if(snapshotIndex<0 || captureIndex<0) break;
             makeSnapshot();
-            printSnapshot(); //TODO: uncomment once printer connected
+            printSnapshot();
             break;
         // change to view current view
-        case 'v':
+        case 'p':
             viewCurrent = !viewCurrent;
             break;
             
         default:
+            /*
             nearClip = 100; // in mm
             farClip = 2500; // in mm
             kinect.setDepthClipping(nearClip,farClip);
             curBucket = 10;
+             */
             break;
     }
 }
