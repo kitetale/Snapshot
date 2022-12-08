@@ -35,6 +35,7 @@ class ofApp : public ofBaseApp{
     void updateLayers();
     void makeSnapshot();
     void printSnapshot();
+    void belowText();
 
 	ofxKinect kinect;
     ofImage imgDiff;

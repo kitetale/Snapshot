@@ -12,8 +12,8 @@ void ofApp::setup(){
     h = kinect.height;
     w = kinect.width;
     
-    nearClip = 100; // in mm
-    farClip = 2500; // in mm
+    nearClip = 4000; // in mm
+    farClip = 10000; // in mm
     kinect.setDepthClipping(nearClip,farClip);
     bucketNum = 6;
     bucketSize = 8000/bucketNum;
@@ -28,14 +28,14 @@ void ofApp::setup(){
     finalImg.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
     
     //capturing images
-    img0.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
-    img1.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
-    img2.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
-    img3.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
-    img4.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
-    img5.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
-    img6.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
-    img7.allocate(kinect.width,kinect.height,OF_IMAGE_GRAYSCALE);
+    img0.allocate(w,h,OF_IMAGE_GRAYSCALE);
+    img1.allocate(w,h,OF_IMAGE_GRAYSCALE);
+    img2.allocate(w,h,OF_IMAGE_GRAYSCALE);
+    img3.allocate(w,h,OF_IMAGE_GRAYSCALE);
+    img4.allocate(w,h,OF_IMAGE_GRAYSCALE);
+    img5.allocate(w,h,OF_IMAGE_GRAYSCALE);
+    img6.allocate(w,h,OF_IMAGE_GRAYSCALE);
+    img7.allocate(w,h,OF_IMAGE_GRAYSCALE);
     
     learnBg = false;
     grayThreshold = 30;
@@ -62,7 +62,8 @@ void ofApp::setup(){
     bucketIndex.clear();
     captureTime.clear();
     
-    //printer.open("/dev/tty."); //TODO: fill out printer info (e.g. "/dev/tty.PL2303-00002014")
+    printer.open("/dev/tty.usbserial-A50285BI");
+    
     viewCurrent = false;
 }
 
@@ -105,6 +106,7 @@ void ofApp::update(){
         lastMin = minutes;
         lastSec = sec;
     }
+    
 }
 //--------------------------------------------------------------
 void ofApp::updateLayers(){
@@ -425,7 +427,7 @@ void ofApp::draw(){
         
         float timeW = font.stringWidth(startT + " - "+endT);
         font.drawString(startT + " - "+endT, ofGetWidth()/2-timeW/2, 650);
-        string location = "Bedroom";
+        string location = "TCS First Floor";
         font.drawString(location,ofGetWidth()/2-font.stringWidth(location)/2, 700);
         ofSetColor(255,255,255);
     }
@@ -685,14 +687,175 @@ void ofApp::makeSnapshot() {
 
 //--------------------------------------------------------------
 void ofApp::printSnapshot() {
-    //printer.setAlign(MIDDLE);
+    if (snapshotIndex-1 < 0)return;
+    
+    printer.setUnderline(false);
+    printer.setAlign(LEFT);
     ofImage viewport;
-    viewport.load("Snapshots/snapshot#"+std::to_string(snapshotIndex-1)+".png");
+    viewport.load("SnapshotImgs/snapshot#"+std::to_string(snapshotIndex-1)+".png");
     viewport.setImageType(OF_IMAGE_GRAYSCALE);
-    printer.print(viewport);
+    viewport.resize(10,h/w*10);
+    
+    printer.setAlign(MIDDLE);
+    printer.println("Snapshot #"+ofToString(snapshotIndex-1));
+    
+    printer.setAlign(LEFT);
+    viewport.rotate90(1);
+    printer.print(viewport,150);
+    printer.println(" ");
+    
+    printer.setAlign(MIDDLE);
+    printer.println(startT);
+    printer.println(" - ");
+    printer.println(endT);
+    printer.println("TCS First Floor"); //location
+    
+    
+    printer.setAlign(RIGHT);
     printer.println("");
+    printer.println("@kitetale");
+    
+    //belowText();
+}
+void ofApp::belowText(){
+    printer.setAlign(MIDDLE);
+    printer.println(startT);
+    printer.println(" - ");
+    printer.println(endT);
+    printer.println("TCS First Floor"); //location
+    
+    
+    printer.setAlign(RIGHT);
+    printer.println("");
+    printer.println("@kitetale");
+}
+/*
+void ofApp::writeBitmap(){
+    int threshold = 0;
+    
+    
+    ofPixels pixels;
+    pixels.allocate(viewport.getWidth(), viewport.getHeight(), OF_IMAGE_GRAYSCALE);
+    pixels = viewport.getPixels();
+        
+    int width = pixels.getWidth();
+    int height = pixels.getHeight();
+    
+    int GrayArrayLength = width * height;
+    unsigned char * GrayArray = new unsigned char[GrayArrayLength];
+    memset(GrayArray,0,GrayArrayLength);
+    
+    for (int y = 0; y < height;y++) {
+        vector<bool> data;
+        for (int x = 0; x < width; x++) {
+            int loc = y*width + x;
+            
+            int pixelCt = 0;
+            float brightTot = 0;
+            
+            ofColor c = pixels.getColor(x, y);
+            float brightTemp = c.getBrightness();
+            
+            // Brightness correction curve:
+            brightTemp =  sqrt(255) * sqrt (brightTemp);
+            if (brightTemp > 255) brightTemp = 255;
+            if (brightTemp < 0) brightTemp = 0;
+            
+            int darkness = 255 - floor(brightTemp);
+            
+            int idx = y*width + x;
+            darkness += GrayArray[idx];
+            
+            if( darkness >= threshold){
+                darkness -= threshold;
+                data.push_back(true);
+            } else {
+                data.push_back(false);
+            }
+            
+            int darkn8 = round(darkness / 8);
+            
+            // Atkinson dithering algorithm:  http://verlagmartinkoch.at/software/dither/index.html
+            // Distribute error as follows:
+            //     [ ]  1/8  1/8
+            //1/8  1/8  1/8
+            //     1/8
+            
+            if ((idx + 1) < GrayArrayLength)
+                GrayArray[idx + 1] += darkn8;
+            if ((idx + 2) < GrayArrayLength)
+                GrayArray[idx + 2] += darkn8;
+            if ((idx + width - 1) < GrayArrayLength)
+                GrayArray[idx + width - 1] += darkn8;
+            if ((idx + width) < GrayArrayLength)
+                GrayArray[idx + width] += darkn8;
+            if ((idx + width + 1) < GrayArrayLength)
+                GrayArray[idx + width + 1 ] += darkn8;
+            if ((idx + 2 * width) < GrayArrayLength)
+                GrayArray[idx + 2 * width] += darkn8;
+        }
+        addToBuffer(data);
+    }
 }
 
+void ofApp::addToBuffer(vector<bool> _vector){
+    if(bConnected){
+        if(isThreadRunning()){
+            if(lock()){
+                buffer.push_back(_vector);
+                unlock();
+            }
+        } else {
+            buffer.push_back(_vector);
+            bPrinting = true;
+            startThread();
+        }
+    }
+}
+
+void ofApp::threadedFunction(){
+    if(bConnected){
+        while(isThreadRunning()){
+            if(buffer.size()>0){
+                printPixelRow(buffer[0]);
+                buffer.erase(buffer.begin());
+            } else {
+                stopThread();
+                bPrinting = false;
+            }
+        }
+    }
+}
+
+void ofApp::printPixelRow(vector<bool> _line){
+    if(bConnected){
+        int width = _line.size();
+        if(width>384)
+            width = 384;
+        
+        int rowBytes        = (width + 7) / 8;                 // Round up to next byte boundary
+        int rowBytesClipped = (rowBytes >= 48) ? 48 : rowBytes; // 384 pixels max width
+        
+        uint8_t data[rowBytesClipped];
+        memset(data,0x00,rowBytesClipped);
+        
+        for (int i = 0; i < width; i++) {
+            uint8_t bit = 0x00;
+            if (_line[i]){
+                bit = 0x01;
+            }
+            data[i/8] += (bit&0x01)<<(7-i%8);
+        }
+        
+        const uint8_t command[4] = {18, 42, 1, rowBytesClipped};
+        port->write(command, 4);
+        usleep(BYTE_TIME*4);
+        
+        port->write(data,rowBytesClipped);
+        usleep(BYTE_TIME*rowBytesClipped);
+    }
+}
+*/
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key){
@@ -793,8 +956,9 @@ void ofApp::keyPressed(int key){
             
         // create snapshot
         case 'c':
+            if(snapshotIndex<0 || captureIndex<0) break;
             makeSnapshot();
-            //printSnapshot(); TODO: uncomment once printer connected
+            printSnapshot(); //TODO: uncomment once printer connected
             break;
         // change to view current view
         case 'v':
